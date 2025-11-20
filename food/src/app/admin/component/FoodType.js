@@ -13,7 +13,15 @@ import { TrashIcon } from "@/app/icons/trashIcon";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { DownMenu } from "./downMenu";
+import { Button } from "@/components/ui/button";
 const UPLOAD_PRESET = "foodProject";
 const CLOUD_NAME = "dchs8gfod";
 
@@ -21,6 +29,8 @@ export const FoodType = ({ FoodCategoryName, id, totalfood }) => {
   const [foodsType, setFoodsType] = useState([]);
   const [addFoodsType, setAddFoodsType] = useState(false);
   const [addDishChange, setAddDishChange] = useState(false);
+  const [foodMenu, setFoodMenu] = useState([]);
+
   const [addFood, setAddFood] = useState({
     foodName: " ",
     price: " ",
@@ -31,7 +41,10 @@ export const FoodType = ({ FoodCategoryName, id, totalfood }) => {
     dishCategory: "",
     ingredients: "",
     price: "",
+    _id: "",
   });
+  console.log(addDish, "uu");
+
   const [imgUrl, setImgUrl] = useState(null);
   const [uploading, setUploading] = useState(false);
 
@@ -103,7 +116,13 @@ export const FoodType = ({ FoodCategoryName, id, totalfood }) => {
         }),
       });
 
-      await getFoodType(), setAddFoodsType(false), setAddFood("");
+      await getFoodType(),
+        setAddFoodsType(false),
+        setAddFood({
+          foodName: "",
+          price: "",
+          ingredients: "",
+        });
       toast("New dish is being added to the menu", {
         position: "top-center",
       });
@@ -121,22 +140,54 @@ export const FoodType = ({ FoodCategoryName, id, totalfood }) => {
           accept: "application/json",
         },
         body: JSON.stringify({
+          // id: food._id,
+          id: addDish._id,
           foodName: addDish.dishName,
           price: addDish.price,
-          category: id,
+          category: addDish.dishCategory,
           ingredients: addDish.ingredients,
           image: imgUrl,
         }),
       });
-
-      await getFoodType(), setAddDishChange(false), setAddDish("");
-      toast("Dish successfully deleted.Would you like to undo this action?", {
+      await getFoodType(),
+        setAddDishChange(false),
+        setAddDish({
+          dishName: "",
+          dishCategory: "",
+          ingredients: "",
+          price: "",
+          _id: "",
+        });
+      toast("Would you like to undo this action?", {
         position: "top-center",
       });
     } catch (err) {
       console.log(err);
     }
   };
+
+  const handleDishDelete = async () => {
+    try {
+      const res = await fetch("http://localhost:8000/food", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          accept: "application/json",
+        },
+        body: JSON.stringify({
+          id: addDish._id,
+        }),
+      });
+      getFoodType(),
+        setAddDishChange(false),
+        toast("Dish successfully deleted.", {
+          position: "top-center",
+        });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  console.log(id, "aaaaaa");
 
   const getFoodType = async () => {
     const data = await fetch(
@@ -150,6 +201,15 @@ export const FoodType = ({ FoodCategoryName, id, totalfood }) => {
   useEffect(() => {
     getFoodType();
   }, []);
+  const getData = async () => {
+    const data = await fetch(`http://localhost:8000/foodCategory`, options);
+    const jsonData = await data.json();
+    setFoodMenu(jsonData);
+    console.log(jsonData, "category");
+  };
+  useEffect(() => {
+    getData();
+  }, []);
 
   return (
     <div className="bg-white max-h-fit mb-5 w-[1800px] rounded-2xl  ">
@@ -159,14 +219,6 @@ export const FoodType = ({ FoodCategoryName, id, totalfood }) => {
       <div className="w-[1700px] flex flex-wrap gap-4 ml-5 pb-5">
         <div className="w-[270px] h-[241px] border-2 border-dashed rounded-2xl flex flex-col items-center justify-center">
           <div className="flex justify-center flex-col items-center gap-4">
-            <button
-              className="h-9 rounded-3xl bg-[#ef4444] w-9 text-white"
-              onClick={() => {
-                setAddFoodsType(true);
-              }}
-            >
-              +
-            </button>
             <div className="flex flex-col justify-center items-center">
               <p>Add new dishes</p>
               <p>{FoodCategoryName}</p>
@@ -185,16 +237,173 @@ export const FoodType = ({ FoodCategoryName, id, totalfood }) => {
                   height={100}
                   alt="image failed"
                   src={inform.image || "/amarbaysgalant.png"}
-                  className="w-full h-full "
+                  className="w-full h-full absolute "
                 />
-                <button
-                  className="bg-white w-11 h-11 rounded-full flex items-center justify-center absolute z-10"
-                  onClick={() => {
-                    setAddDishChange(true);
-                  }}
-                >
-                  <PenIcon />
-                </button>
+                <Dialog className="w-[472px] h-[516px] ">
+                  <form>
+                    <DialogTrigger asChild>
+                      <button
+                        className="bg-white w-11 h-11 rounded-full flex items-center justify-center absolute z-10 right-3 bottom-3"
+                        onClick={() => {
+                          setAddDish({
+                            dishName: inform.foodName,
+                            ingredients: inform.ingredients,
+                            price: inform.price,
+                            _id: inform._id,
+                            dishCategory: inform.category,
+                          });
+                          setAddDishChange(true);
+                        }}
+                      >
+                        <PenIcon />
+                      </button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-fit!">
+                      <DialogTitle></DialogTitle>
+                      <div className="flex fixed inset-0 z-10 bg-black/25 w-full h-full justify-center items-center ">
+                        <div className="w-[424px] h-[600px] bg-white rounded-2xl ml-10 items-center flex flex-col ">
+                          <div className="w-[412px] h-[52px] flex mt-5">
+                            <div className="w-[366px] h-7 ml-1 text-[19px] mt-1 font-medium p-2">
+                              Dishes Info
+                            </div>
+                            <DialogClose>
+                              <div className="w-9 h-9 bg-[#f5f5f7] rounded-2xl text-xl">
+                                x
+                              </div>
+                            </DialogClose>
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            <div className="w-[404px] h-15 flex justify-between p-2">
+                              <p className="text-[#71717a]">Dish name</p>
+                              <input
+                                className="h-[38px] px-2 border rounded-lg w-72"
+                                placeholder="food name"
+                                value={addDish.dishName || ""}
+                                onChange={(e) => {
+                                  setAddDish({
+                                    ...addDish,
+                                    dishName: e.target.value,
+                                  });
+                                }}
+                              />
+                            </div>
+                            <div className="w-[404px] h-15 flex justify-between p-2">
+                              <p className="text-[#71717a]">Dish category</p>
+                              <DownMenu
+                                foodMenu={foodMenu}
+                                setAddDish={setAddDish}
+                                addDish={addDish}
+                              />
+                            </div>
+                            <div className=" h-20 flex  justify-between w-[404px] p-2 ">
+                              <p className="text-[#71717a]">Ingredients</p>
+                              <input
+                                placeholder="List ingredients ..."
+                                className="h-20 px-2 border rounded-lg w-72 "
+                                value={addDish.ingredients || ""}
+                                onChange={(e) => {
+                                  setAddDish({
+                                    ...addDish,
+                                    ingredients: e.target.value,
+                                  });
+                                }}
+                              />
+                            </div>
+                            <div className="w-[404px] h-20 flex justify-between p-2">
+                              <p className="text-[#71717a]"> Price</p>
+                              <input
+                                className="h-[38px] px-2 border rounded-lg w-72"
+                                placeholder="Enter price"
+                                value={addDish.price || ""}
+                                onChange={(e) => {
+                                  setAddDish({
+                                    ...addDish,
+                                    price: e.target.value,
+                                  });
+                                }}
+                              />
+                            </div>
+                            <div className=" flex   justify-center h-35 w-[404px] p-2 ">
+                              <p className="w-[135px] h-4 text-[14px] font-medium text-[#71717a]">
+                                Image
+                              </p>
+                              <div className="w-72 h-29 bg-blue-100 cursor-pointer rounded-lg relative ">
+                                {uploading && (
+                                  <p className="text-white flex  justify-center ">
+                                    Uploading...
+                                  </p>
+                                )}
+                                {!imgUrl ? (
+                                  <div className="flex justify-center items-center w-72 h-29 gap-2.5 ">
+                                    <button className="bg-white w-9 h-9 rounded-full flex items-center justify-center">
+                                      <label
+                                        htmlFor="file-input"
+                                        style={{ cursor: "pointer" }}
+                                      >
+                                        <ImageUp />
+                                      </label>
+                                    </button>
+
+                                    <input
+                                      id="file-input"
+                                      type="file"
+                                      style={{ display: "none" }}
+                                      onChange={handleLogoUpload}
+                                      accept="image/*"
+                                    />
+                                  </div>
+                                ) : (
+                                  <img
+                                    style={{
+                                      width: "288px",
+                                      height: "116px",
+                                      borderRadius: "10px",
+                                      border: "none",
+                                      display: "block",
+                                      objectFit: "cover",
+                                    }}
+                                    src={imgUrl}
+                                    alt="Uplouded"
+                                  />
+                                )}
+                                <button
+                                  style={{
+                                    position: "absolute",
+                                    top: "5px",
+                                    right: "5px",
+                                    background: "rgba(0,0,0,0.5)",
+                                    color: "white",
+                                    border: "none",
+                                    borderRadius: "100%",
+                                    padding: "5px 10px",
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={handleRemoveInput}
+                                >
+                                  x
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="w-full flex justify-between p-5  ">
+                            <button
+                              className="w-12 h-10 border border-[#ef4444] rounded-sm flex items-center justify-center"
+                              onClick={handleDishDelete}
+                            >
+                              <TrashIcon />
+                            </button>
+                            <button
+                              className="w-32 h-10 bg-black text-white rounded-lg "
+                              onClick={handleDishChange}
+                            >
+                              Save changes
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </form>
+                </Dialog>
               </div>
               <div className="w-[237px] h-[60px] flex flex-col justify-between items-center">
                 <div className="h-5 flex justify-between w-[220px] ">
@@ -207,259 +416,139 @@ export const FoodType = ({ FoodCategoryName, id, totalfood }) => {
           );
         })}
       </div>
-      {addFoodsType && (
-        <div className="flex fixed inset-0 z-10 bg-black/25 w-full h-full justify-center items-center ">
-          <div className="w-[460px] h-[562px] bg-white rounded-2xl ml-10 items-center flex flex-col">
-            <div className="w-[412px] h-[52px] flex mt-7">
-              <div className="w-[366px] h-7 ml-1 text-[19px] mt-1 font-medium">
-                Add new Dish to {FoodCategoryName}
-              </div>
-              <button
-                className="w-9 h-9 bg-[#f5f5f7] rounded-2xl text-xl"
-                onClick={() => setAddFoodsType(false)}
-              >
-                x
+      <div className="absolute">
+        <Dialog className="w-[460px] h-[562px]">
+          <form>
+            <DialogTrigger asChild>
+              <button className="h-9 rounded-full bg-[#ef4444] w-9 text-white flex items-center justify-center absolute z-10 bottom-45  left-35">
+                +
               </button>
-            </div>
-            <div className="w-[412px] h-15 justify-between flex">
-              <div className="w-[194px] h-15">
-                <p>Food</p>
-                <input
-                  placeholder="Type food name"
-                  className="h-[38px] px-2 border rounded-lg"
-                  value={addFood.foodName}
-                  onChange={(e) => {
-                    setAddFood({ ...addFood, foodName: e.target.value });
-                  }}
-                />
-              </div>
-              <div className="w-[194px] h-15">
-                <p>Food price</p>
-                <input
-                  placeholder="Price"
-                  className="h-[38px] px-2 border rounded-lg"
-                  value={addFood.price}
-                  onChange={(e) => {
-                    setAddFood({ ...addFood, price: e.target.value });
-                  }}
-                />
-              </div>
-            </div>
-            <div className="w-[412px] h-28 flex flex-col mt-4 ">
-              <p>Ingredients</p>
-              <input
-                placeholder="List ingredients ..."
-                className="h-70 px-2 border rounded-lg "
-                value={addFood.ingredients}
-                onChange={(e) => {
-                  setAddFood({ ...addFood, ingredients: e.target.value });
-                }}
-              />
-            </div>
-            <div className=" flex flex-col  gap-2 justify-center h-52  mt-4">
-              <p className="w-104 h-4 text-[14px] font-medium text-[#334155]">
-                Food image
-              </p>
-              <div className="w-104 h-45 bg-blue-100 cursor-pointer rounded-lg relative ">
-                {uploading && (
-                  <p className="text-white flex  justify-center ">
-                    Uploading...
-                  </p>
-                )}
-                {!imgUrl ? (
-                  <div className="flex justify-center items-center w-104 h-52 gap-2.5 flex-col">
-                    <button className="bg-white w-9 h-9 rounded-full flex items-center justify-center">
-                      <label htmlFor="file-input" style={{ cursor: "pointer" }}>
-                        <ImageUp />
-                      </label>
-                    </button>
-                    <label>Choose a file or drag & drop it here </label>
+            </DialogTrigger>
+            <DialogContent className="max-w-fit">
+              <DialogTitle></DialogTitle>
 
-                    <input
-                      id="file-input"
-                      type="file"
-                      style={{ display: "none" }}
-                      onChange={handleLogoUpload}
-                      accept="image/*"
-                    />
+              <div className="flex fixed inset-0 z-10 bg-black/25 w-full h-full justify-center items-center ">
+                <div className="w-[460px] h-[562px] bg-white rounded-2xl ml-10 items-center flex flex-col">
+                  <div className="w-[412px] h-[52px] flex mt-7">
+                    <div className="w-[366px] h-7 ml-1 text-[19px] mt-1 font-medium">
+                      Add new Dish to {FoodCategoryName}
+                    </div>
+                    <DialogClose>
+                      <div className="w-9 h-9 bg-[#f5f5f7] rounded-2xl text-xl">
+                        x
+                      </div>
+                    </DialogClose>
                   </div>
-                ) : (
-                  <img
-                    style={{
-                      width: "100%",
-                      height: "200px",
-                      borderRadius: "10px",
-                      border: "none",
-                      display: "block",
-                    }}
-                    src={imgUrl}
-                    alt="Uplouded"
-                  />
-                )}
-                <button
-                  style={{
-                    position: "absolute",
-                    top: "5px",
-                    right: "5px",
-                    background: "rgba(0,0,0,0.5)",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "100%",
-                    padding: "5px 10px",
-                    cursor: "pointer",
-                  }}
-                  onClick={handleRemoveInput}
-                >
-                  x
-                </button>
-              </div>
-            </div>
-            <div className="w-full flex justify-end p-7 ">
-              <button
-                className="w-24 h-10 bg-black text-white rounded-lg "
-                onClick={handleAddDish}
-              >
-                Add Dish
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {addDishChange && (
-        <div className="flex fixed inset-0 z-10 bg-black/25 w-full h-full justify-center items-center ">
-          <div className="w-[460px] h-[600px] bg-white rounded-2xl ml-10 items-center flex flex-col ">
-            <div className="w-[412px] h-[52px] flex mt-5">
-              <div className="w-[366px] h-7 ml-1 text-[19px] mt-1 font-medium">
-                Dishes Info
-              </div>
-              <button
-                className="w-9 h-9 bg-[#f5f5f7] rounded-2xl text-xl"
-                onClick={() => setAddDishChange(false)}
-              >
-                x
-              </button>
-            </div>
-            <div className="flex flex-col gap-2">
-              <div className="w-[424px] h-15 flex justify-between">
-                <p className="text-[#71717a]">Dish name</p>
-                <input
-                  className="h-[38px] px-2 border rounded-lg w-72"
-                  placeholder="food name"
-                  value={addDish.dishName}
-                  onChange={(e) => {
-                    setAddDish({ ...addDish, dishName: e.target.value });
-                  }}
-                />
-              </div>
-              <div className="w-[424px] h-15 flex justify-between">
-                <p className="text-[#71717a]">Dish category</p>
-                <input
-                  className="h-9 px-2 border rounded-lg w-72"
-                  value={addDish.dishCategory}
-                  onChange={(e) => {
-                    setAddDish({ ...addDish, price: e.target.value });
-                  }}
-                />
-              </div>
-
-              <div className=" h-20 flex  justify-between w-[424px] ">
-                <p className="text-[#71717a]">Ingredients</p>
-                <input
-                  placeholder="List ingredients ..."
-                  className="h-20 px-2 border rounded-lg w-72 "
-                  value={addDish.ingredients}
-                  onChange={(e) => {
-                    setAddDish({ ...addDish, ingredients: e.target.value });
-                  }}
-                />
-              </div>
-              <div className="w-[424px] h-20 flex justify-between">
-                <p className="text-[#71717a]"> Price</p>
-                <input
-                  className="h-[38px] px-2 border rounded-lg w-72"
-                  placeholder="Enter price"
-                  value={addDish.price}
-                  onChange={(e) => {
-                    setAddDish({ ...addDish, price: e.target.value });
-                  }}
-                />
-              </div>
-              <div className=" flex   justify-center h-35 w-[424px] ">
-                <p className="w-104 h-4 text-[14px] font-medium text-[#71717a]">
-                  Image
-                </p>
-                <div className="w-72 h-29 bg-blue-100 cursor-pointer rounded-lg relative ">
-                  {uploading && (
-                    <p className="text-white flex  justify-center ">
-                      Uploading...
-                    </p>
-                  )}
-                  {!imgUrl ? (
-                    <div className="flex justify-center items-center w-72 h-29 gap-2.5 ">
-                      <button className="bg-white w-9 h-9 rounded-full flex items-center justify-center">
-                        <label
-                          htmlFor="file-input"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <ImageUp />
-                        </label>
-                      </button>
-
+                  <div className="w-[412px] h-15 justify-between flex">
+                    <div className="w-[194px] h-15">
+                      <p>Food</p>
                       <input
-                        id="file-input"
-                        type="file"
-                        style={{ display: "none" }}
-                        onChange={handleLogoUpload}
-                        accept="image/*"
+                        placeholder="Type food name"
+                        className="h-[38px] px-2 border rounded-lg"
+                        value={addFood.foodName}
+                        onChange={(e) => {
+                          setAddFood({ ...addFood, foodName: e.target.value });
+                        }}
                       />
                     </div>
-                  ) : (
-                    <img
-                      style={{
-                        width: "100%",
-                        height: "200px",
-                        borderRadius: "10px",
-                        border: "none",
-                        display: "block",
+                    <div className="w-[194px] h-15">
+                      <p>Food price</p>
+                      <input
+                        placeholder="Price"
+                        className="h-[38px] px-2 border rounded-lg"
+                        value={addFood.price}
+                        onChange={(e) => {
+                          setAddFood({ ...addFood, price: e.target.value });
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="w-[412px] h-28 flex flex-col mt-4 ">
+                    <p>Ingredients</p>
+                    <input
+                      placeholder="List ingredients ..."
+                      className="h-70 px-2 border rounded-lg "
+                      value={addFood.ingredients}
+                      onChange={(e) => {
+                        setAddFood({ ...addFood, ingredients: e.target.value });
                       }}
-                      src={imgUrl}
-                      alt="Uplouded"
                     />
-                  )}
-                  <button
-                    style={{
-                      position: "absolute",
-                      top: "5px",
-                      right: "5px",
-                      background: "rgba(0,0,0,0.5)",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "100%",
-                      padding: "5px 10px",
-                      cursor: "pointer",
-                    }}
-                    onClick={handleRemoveInput}
-                  >
-                    x
-                  </button>
+                  </div>
+                  <div className=" flex flex-col  gap-2 justify-center h-52  mt-4">
+                    <p className="w-104 h-4 text-[14px] font-medium text-[#334155]">
+                      Food image
+                    </p>
+                    <div className="w-104 h-45 bg-blue-100 cursor-pointer rounded-lg relative ">
+                      {uploading && (
+                        <p className="text-white flex  justify-center ">
+                          Uploading...
+                        </p>
+                      )}
+                      {!imgUrl ? (
+                        <div className="flex justify-center items-center w-104 h-52 gap-2.5 flex-col">
+                          <button className="bg-white w-9 h-9 rounded-full flex items-center justify-center">
+                            <label
+                              htmlFor="file-input"
+                              style={{ cursor: "pointer" }}
+                            >
+                              <ImageUp />
+                            </label>
+                          </button>
+                          <label>Choose a file or drag & drop it here </label>
+
+                          <input
+                            id="file-input"
+                            type="file"
+                            style={{ display: "none" }}
+                            onChange={handleLogoUpload}
+                            accept="image/*"
+                          />
+                        </div>
+                      ) : (
+                        <img
+                          style={{
+                            width: "100%",
+                            height: "200px",
+                            borderRadius: "10px",
+                            border: "none",
+                            display: "block",
+                          }}
+                          src={imgUrl}
+                          alt="Uplouded"
+                        />
+                      )}
+                      <button
+                        style={{
+                          position: "absolute",
+                          top: "5px",
+                          right: "5px",
+                          background: "rgba(0,0,0,0.5)",
+                          color: "white",
+                          border: "none",
+                          borderRadius: "100%",
+                          padding: "5px 10px",
+                          cursor: "pointer",
+                        }}
+                        onClick={handleRemoveInput}
+                      >
+                        x
+                      </button>
+                    </div>
+                  </div>
+                  <div className="w-full flex justify-end p-7 ">
+                    <button
+                      className="w-24 h-10 bg-black text-white rounded-lg "
+                      onClick={handleAddDish}
+                    >
+                      Add Dish
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="w-full flex justify-between p-5  ">
-              <button className="w-12 h-10 border border-[#ef4444] rounded-sm flex items-center justify-center">
-                <TrashIcon />
-              </button>
-              <button
-                className="w-32 h-10 bg-black text-white rounded-lg "
-                onClick={handleDishChange}
-              >
-                Save changes
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+            </DialogContent>
+          </form>
+        </Dialog>
+      </div>
     </div>
   );
 };
