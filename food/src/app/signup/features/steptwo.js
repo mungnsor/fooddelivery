@@ -79,7 +79,7 @@ export const StepTwo2 = (props) => {
   };
   return (
     <div className="w-full h-full">
-      <div className="w-[1440px] flex justify-evenly m-auto bg-gray-50 py-5 items-center">
+      <div className="w-full flex justify-evenly m-auto  py-5 items-center">
         <div className="w-104 h-72 flex flex-col justify-between">
           <div>
             <button
@@ -132,7 +132,7 @@ export const StepTwo2 = (props) => {
             </Link>
           </div>
         </div>
-        <div className="w-214 h-226">
+        <div className="w-214 h-250">
           <img className="w-full h-full" src="./delivery.jpg" />
         </div>
       </div>

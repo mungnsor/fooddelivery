@@ -18,7 +18,7 @@ export const SaveFood = ({
   count,
 }) => {
   const [foodsType, setFoodsType] = useState([]);
-  const [addDishChange, setAddDishChange] = useState(false);
+  const [addDishChange, setAddDishChange] = useState(null);
   const [page, setPage] = useState(count);
   const getFoodType = async () => {
     const data = await fetch(
@@ -63,13 +63,16 @@ export const SaveFood = ({
       console.log(err);
     }
   };
+  const handleDelete = () => {
+    setAddDishChange(null);
+  };
   return (
     <div className="w-full   overflow-scroll ">
       <div className="w-120  border-dashed border-b border-[#09090B80] h-30 flex  mb-5 gap-2 ">
-        <div className="w-[25%]  h-20 border rounded-2xl">
+        <div className="w-[30%]  h-23 border rounded-2xl">
           <img className="w-full h-full" src={image} />
         </div>
-        <div className="flex flex-col w-[70%] h-27 ">
+        <div className="flex flex-col w-[70%] h-25 ">
           <div className="  h-35 flex justify-between">
             <div className=" w-[55%] h-20">
               <p className="text-[#EF4444] text-base">{foodName}</p>
@@ -77,7 +80,7 @@ export const SaveFood = ({
             </div>
             <button
               className="h-7 w-7 border rounded-full flex justify-center items-center border-red-500 cursor-pointer text-red-500"
-              onClick={handleDishDelete}
+              onClick={handleDelete}
             >
               x
             </button>

@@ -10,18 +10,33 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+  DialogHeader,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PackageIcon } from "../icons/package";
 import Link from "next/link";
 import { SaveFood } from "../components/saveFood";
+import { Textarea } from "@/components/ui/textarea";
+import { PictureIcon } from "../icons/pictureIcon";
+import { EmpthyCard } from "../components/empthy";
+import { EmpthyOrder } from "../components/empthyOrder";
 
-export const Header = () => {
+export const Header = ({ page }) => {
   const [addLocation, setAddLocation] = useState(false);
   const [addLocationS, setAddLocationS] = useState("");
   const [inform, setInform] = useState(false);
   const [information, setInformation] = useState("");
   const [address, setAddress] = useState("");
   const [saveFood, setSaveFood] = useState([]);
+  console.log(saveFood, "tt");
+
   const handleAddCategoryChange = async () => {
     try {
       const res = await fetch("http://localhost:8000/foodCategory", {
@@ -40,6 +55,10 @@ export const Header = () => {
       console.log(err);
     }
   };
+  const totalPrice = saveFood.reduce((sum, item) => {
+    return sum + item.price * item.page;
+  }, 0);
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("savedFoods");
@@ -90,7 +109,7 @@ export const Header = () => {
                 </TabsList>
                 <TabsContent value="account" className="w-145 ">
                   <div className="w-135 mt-5 h-175 flex rounded-2xl text-xl items-center flex-col justify-around bg-white">
-                    <div className=" h-[75%] w-120 flex justify-around flex-col mt-3">
+                    <div className=" h-[90%] w-120 flex justify-start flex-col mt-3 ">
                       <div className="text-[#71717A] h-10 text-2xl w-115 font-semibold ">
                         My card
                       </div>
@@ -106,19 +125,20 @@ export const Header = () => {
                           />
                         );
                       })}
+                      {/* <EmpthyCard /> */}
                     </div>
                     <div className="w-120 h-40  flex  justify-between  flex-col">
                       <div className="text-[#71717A] h-11 text-xl flex items-end  font-semibold ">
                         Delivery location
                       </div>
                       <div className=" h-26  flex flex-col justify-between">
-                        {address && (
-                          <Textarea
-                            placeholder="Please share your complete address"
-                            value={address}
-                          />
-                        )}
-
+                        {" "}
+                        <Textarea
+                          className="border border-[#E4E4E7] w-120 h-10"
+                          placeholder="Please share your complete address"
+                          value={address}
+                          onChange={(e) => setAddress(e.target.value)}
+                        />
                         <p className=" text-sm text-[#EF4444] h-8 ml-1">
                           Please complete your address
                         </p>
@@ -134,27 +154,74 @@ export const Header = () => {
                       <div className="w-120  h-58  flex justify-around flex-col mt-2 mr-3 ">
                         <div className="h-[54%] flex flex-col justify-between ">
                           <div className=" h-18  flex flex-col justify-between ">
-                            <p className="h-9  flex text-[18px] items-center">
-                              items
-                            </p>
-                            <p className="h-9  text-[18px] flex items-center">
-                              Shipping
-                            </p>
+                            <div className="flex justify-between">
+                              <p className="h-9  flex text-[18px] items-center text-[#71717a] font-normal">
+                                Items
+                              </p>
+                              <p className="font-bold text-[16px] ">
+                                ${totalPrice}
+                              </p>
+                            </div>
+
+                            <div className="flex justify-between">
+                              <p className="h-9  text-[18px] flex items-center text-[#71717a] font-normal">
+                                Shipping
+                              </p>
+                              <p className="font-bold text-[16px]">$10</p>
+                            </div>
                           </div>
                           <div className="h-5  flex items-center">
                             <div className="w-full border border-dashed border-[#09090B80]"></div>
                           </div>
                         </div>
-
-                        <div className="h-12 mt-2 text-[18px]  ">Total</div>
-                        <button className="w-full h-10 bg-[#EF4444] cursor-pointer flex items-center justify-center rounded-2xl">
-                          <p className="text-white font-medium">Checkout</p>
-                        </button>
+                        <div className="flex justify-between">
+                          <p className="h-9  text-[18px] flex items-center text-[#71717a] font-normal">
+                            Total
+                          </p>
+                          <p className="font-bold text-[16px]">
+                            ${totalPrice + 10}
+                          </p>
+                        </div>
+                        <Dialog>
+                          <form>
+                            <DialogTrigger asChild>
+                              <button className="w-full h-10 bg-[#EF4444] cursor-pointer flex items-center justify-center rounded-2xl">
+                                <p className="text-white font-medium">
+                                  Checkout
+                                </p>
+                              </button>
+                            </DialogTrigger>
+                            <DialogContent className="w-[664px] h-[439px] rounded-2xl">
+                              <DialogHeader>
+                                <DialogTitle className="flex justify-center items-center mt-10 font-semibold text-[24px] ">
+                                  Your order has been successfully placed !
+                                </DialogTitle>
+                                <div className="flex justify-center items-center">
+                                  <PictureIcon />
+                                </div>
+                                <div className="flex justify-center items-center">
+                                  <button className="w-[188px] h-11 flex justify-center items-center bg-[#f4f4f5] text-black rounded-full">
+                                    Back to Home
+                                  </button>
+                                </div>
+                              </DialogHeader>
+                            </DialogContent>
+                          </form>
+                        </Dialog>
                       </div>
                     </div>
                   </div>
                 </TabsContent>
-                <TabsContent value="password"></TabsContent>
+                <TabsContent value="password" className="w-145">
+                  <div className="w-135 mt-5 h-230 flex rounded-2xl text-xl items-center flex-col justify-around bg-white">
+                    <div className=" h-[95%] w-120 flex justify-start flex-col ">
+                      <div className="text-[#71717A] h-10 text-2xl w-115 font-semibold ">
+                        Order history
+                      </div>
+                      <EmpthyOrder />
+                    </div>
+                  </div>
+                </TabsContent>
               </Tabs>
             </div>
           </SheetContent>

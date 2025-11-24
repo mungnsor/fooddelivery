@@ -21,7 +21,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { DownMenu } from "./downMenu";
-import { Button } from "@/components/ui/button";
 const UPLOAD_PRESET = "foodProject";
 const CLOUD_NAME = "dchs8gfod";
 
@@ -140,7 +139,6 @@ export const FoodType = ({ FoodCategoryName, id, totalfood }) => {
           accept: "application/json",
         },
         body: JSON.stringify({
-          // id: food._id,
           id: addDish._id,
           foodName: addDish.dishName,
           price: addDish.price,
@@ -217,8 +215,152 @@ export const FoodType = ({ FoodCategoryName, id, totalfood }) => {
         {FoodCategoryName} ({totalfood})
       </p>
       <div className="w-[1700px] flex flex-wrap gap-4 ml-5 pb-5">
-        <div className="w-[270px] h-[241px] border-2 border-dashed rounded-2xl flex flex-col items-center justify-center">
-          <div className="flex justify-center flex-col items-center gap-4">
+        <div className="w-[270px] h-[241px] border-2 border-dashed rounded-2xl flex flex-col items-center justify-center relative">
+          <div className="flex flex-col items-center gap-10 mr-8 ">
+            <div className="">
+              <Dialog className="w-[460px] h-[562px]">
+                <form>
+                  <DialogTrigger asChild>
+                    <button className="h-9 rounded-full bg-[#ef4444] w-9 text-white flex items-center justify-center    z-0  absolute">
+                      +
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-fit">
+                    <DialogTitle></DialogTitle>
+
+                    <div className="flex fixed inset-0 z-10 bg-black/25 w-full h-full justify-center items-center ">
+                      <div className="w-[460px] h-[562px] bg-white rounded-2xl ml-10 items-center flex flex-col">
+                        <div className="w-[412px] h-[52px] flex mt-7">
+                          <div className="w-[366px] h-7 ml-1 text-[19px] mt-1 font-medium">
+                            Add new Dish to {FoodCategoryName}
+                          </div>
+                          <DialogClose>
+                            <div className="w-9 h-9 bg-[#f5f5f7] rounded-2xl text-xl">
+                              x
+                            </div>
+                          </DialogClose>
+                        </div>
+                        <div className="w-[412px] h-15 justify-between flex">
+                          <div className="w-[194px] h-15">
+                            <p>Food</p>
+                            <input
+                              placeholder="Type food name"
+                              className="h-[38px] px-2 border rounded-lg"
+                              value={addFood.foodName}
+                              onChange={(e) => {
+                                setAddFood({
+                                  ...addFood,
+                                  foodName: e.target.value,
+                                });
+                              }}
+                            />
+                          </div>
+                          <div className="w-[194px] h-15">
+                            <p>Food price</p>
+                            <input
+                              placeholder="Price"
+                              className="h-[38px] px-2 border rounded-lg"
+                              value={addFood.price}
+                              onChange={(e) => {
+                                setAddFood({
+                                  ...addFood,
+                                  price: e.target.value,
+                                });
+                              }}
+                            />
+                          </div>
+                        </div>
+                        <div className="w-[412px] h-28 flex flex-col mt-4 ">
+                          <p>Ingredients</p>
+                          <input
+                            placeholder="List ingredients ..."
+                            className="h-70 px-2 border rounded-lg "
+                            value={addFood.ingredients}
+                            onChange={(e) => {
+                              setAddFood({
+                                ...addFood,
+                                ingredients: e.target.value,
+                              });
+                            }}
+                          />
+                        </div>
+                        <div className=" flex flex-col  gap-2 justify-center h-52  mt-4">
+                          <p className="w-104 h-4 text-[14px] font-medium text-[#334155]">
+                            Food image
+                          </p>
+                          <div className="w-104 h-45 bg-blue-100 cursor-pointer rounded-lg relative ">
+                            {uploading && (
+                              <p className="text-white flex  justify-center ">
+                                Uploading...
+                              </p>
+                            )}
+                            {!imgUrl ? (
+                              <div className="flex justify-center items-center w-104 h-52 gap-2.5 flex-col">
+                                <button className="bg-white w-9 h-9 rounded-full flex items-center justify-center">
+                                  <label
+                                    htmlFor="file-input"
+                                    style={{ cursor: "pointer" }}
+                                  >
+                                    <ImageUp />
+                                  </label>
+                                </button>
+                                <label>
+                                  Choose a file or drag & drop it here{" "}
+                                </label>
+
+                                <input
+                                  id="file-input"
+                                  type="file"
+                                  style={{ display: "none" }}
+                                  onChange={handleLogoUpload}
+                                  accept="image/*"
+                                />
+                              </div>
+                            ) : (
+                              <img
+                                style={{
+                                  width: "100%",
+                                  height: "200px",
+                                  borderRadius: "10px",
+                                  border: "none",
+                                  display: "block",
+                                }}
+                                src={imgUrl}
+                                alt="Uplouded"
+                              />
+                            )}
+                            <button
+                              style={{
+                                position: "absolute",
+                                top: "5px",
+                                right: "5px",
+                                background: "rgba(0,0,0,0.5)",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "100%",
+                                padding: "5px 10px",
+                                cursor: "pointer",
+                              }}
+                              onClick={handleRemoveInput}
+                            >
+                              x
+                            </button>
+                          </div>
+                        </div>
+                        <div className="w-full flex justify-end p-7 ">
+                          <button
+                            className="w-24 h-10 bg-black text-white rounded-lg "
+                            onClick={handleAddDish}
+                          >
+                            Add Dish
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </form>
+              </Dialog>
+            </div>
             <div className="flex flex-col justify-center items-center">
               <p>Add new dishes</p>
               <p>{FoodCategoryName}</p>
@@ -415,139 +557,6 @@ export const FoodType = ({ FoodCategoryName, id, totalfood }) => {
             </div>
           );
         })}
-      </div>
-      <div className="absolute">
-        <Dialog className="w-[460px] h-[562px]">
-          <form>
-            <DialogTrigger asChild>
-              <button className="h-9 rounded-full bg-[#ef4444] w-9 text-white flex items-center justify-center absolute z-10 bottom-45  left-35">
-                +
-              </button>
-            </DialogTrigger>
-            <DialogContent className="max-w-fit">
-              <DialogTitle></DialogTitle>
-
-              <div className="flex fixed inset-0 z-10 bg-black/25 w-full h-full justify-center items-center ">
-                <div className="w-[460px] h-[562px] bg-white rounded-2xl ml-10 items-center flex flex-col">
-                  <div className="w-[412px] h-[52px] flex mt-7">
-                    <div className="w-[366px] h-7 ml-1 text-[19px] mt-1 font-medium">
-                      Add new Dish to {FoodCategoryName}
-                    </div>
-                    <DialogClose>
-                      <div className="w-9 h-9 bg-[#f5f5f7] rounded-2xl text-xl">
-                        x
-                      </div>
-                    </DialogClose>
-                  </div>
-                  <div className="w-[412px] h-15 justify-between flex">
-                    <div className="w-[194px] h-15">
-                      <p>Food</p>
-                      <input
-                        placeholder="Type food name"
-                        className="h-[38px] px-2 border rounded-lg"
-                        value={addFood.foodName}
-                        onChange={(e) => {
-                          setAddFood({ ...addFood, foodName: e.target.value });
-                        }}
-                      />
-                    </div>
-                    <div className="w-[194px] h-15">
-                      <p>Food price</p>
-                      <input
-                        placeholder="Price"
-                        className="h-[38px] px-2 border rounded-lg"
-                        value={addFood.price}
-                        onChange={(e) => {
-                          setAddFood({ ...addFood, price: e.target.value });
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div className="w-[412px] h-28 flex flex-col mt-4 ">
-                    <p>Ingredients</p>
-                    <input
-                      placeholder="List ingredients ..."
-                      className="h-70 px-2 border rounded-lg "
-                      value={addFood.ingredients}
-                      onChange={(e) => {
-                        setAddFood({ ...addFood, ingredients: e.target.value });
-                      }}
-                    />
-                  </div>
-                  <div className=" flex flex-col  gap-2 justify-center h-52  mt-4">
-                    <p className="w-104 h-4 text-[14px] font-medium text-[#334155]">
-                      Food image
-                    </p>
-                    <div className="w-104 h-45 bg-blue-100 cursor-pointer rounded-lg relative ">
-                      {uploading && (
-                        <p className="text-white flex  justify-center ">
-                          Uploading...
-                        </p>
-                      )}
-                      {!imgUrl ? (
-                        <div className="flex justify-center items-center w-104 h-52 gap-2.5 flex-col">
-                          <button className="bg-white w-9 h-9 rounded-full flex items-center justify-center">
-                            <label
-                              htmlFor="file-input"
-                              style={{ cursor: "pointer" }}
-                            >
-                              <ImageUp />
-                            </label>
-                          </button>
-                          <label>Choose a file or drag & drop it here </label>
-
-                          <input
-                            id="file-input"
-                            type="file"
-                            style={{ display: "none" }}
-                            onChange={handleLogoUpload}
-                            accept="image/*"
-                          />
-                        </div>
-                      ) : (
-                        <img
-                          style={{
-                            width: "100%",
-                            height: "200px",
-                            borderRadius: "10px",
-                            border: "none",
-                            display: "block",
-                          }}
-                          src={imgUrl}
-                          alt="Uplouded"
-                        />
-                      )}
-                      <button
-                        style={{
-                          position: "absolute",
-                          top: "5px",
-                          right: "5px",
-                          background: "rgba(0,0,0,0.5)",
-                          color: "white",
-                          border: "none",
-                          borderRadius: "100%",
-                          padding: "5px 10px",
-                          cursor: "pointer",
-                        }}
-                        onClick={handleRemoveInput}
-                      >
-                        x
-                      </button>
-                    </div>
-                  </div>
-                  <div className="w-full flex justify-end p-7 ">
-                    <button
-                      className="w-24 h-10 bg-black text-white rounded-lg "
-                      onClick={handleAddDish}
-                    >
-                      Add Dish
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </DialogContent>
-          </form>
-        </Dialog>
       </div>
     </div>
   );

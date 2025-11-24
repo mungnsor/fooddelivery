@@ -16,14 +16,14 @@ export default function Home() {
   };
   return (
     <>
-      {step === 1 && (
-        <StepOne1
+      {step === 2 && (
+        <StepTwo2
           handleNextStep={handleNextStep}
           handleBackStep={handleBackStep}
         />
       )}
-      {step === 2 && (
-        <StepTwo2
+      {step === 1 && (
+        <StepOne1
           // handleBackStep={handleBackStep}
           handleNextStep={handleNextStep}
         />

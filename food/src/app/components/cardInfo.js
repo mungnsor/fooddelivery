@@ -7,10 +7,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { ZuvIcon } from "../icons/zuvIcon";
 export const CardInfo = (props) => {
   const { image, foodName, ingredients, price } = props;
   const [page, setPage] = useState(1);
+  const [added, setAdded] = useState(false);
   const [saveFood, setSaveFood] = useState(() => {
     const saved = localStorage.getItem("savedFoods");
     return saved ? JSON.parse(saved) : [];
@@ -26,22 +27,27 @@ export const CardInfo = (props) => {
       setPage(page - 1);
     }
   };
-  const handleAdd = () => {
-    const saved = JSON.parse(localStorage.getItem("savedFoods")) || [];
+  const handle = (e) => {
+    e.preventDefault();
 
-    const newItem = {
-      image,
-      foodName,
-      ingredients,
-      price,
-      page,
-    };
+    const saved = JSON.parse(localStorage.getItem("savedFoods")) || [];
+    const newItem = { image, foodName, ingredients, price, page };
 
     const updatedList = [...saved, newItem];
-
     setSaveFood(updatedList);
     localStorage.setItem("savedFoods", JSON.stringify(updatedList));
+
+    setAdded(true);
   };
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem("savedFoods")) || [];
+
+    const exists = saved.some((item) => item.foodName === foodName);
+
+    if (exists) {
+      setAdded(true);
+    }
+  }, [foodName]);
 
   return (
     <div className="w-[398px] h-[342px] bg-white rounded-2xl flex flex-col items-center justify-evenly">
@@ -54,11 +60,14 @@ export const CardInfo = (props) => {
           <Dialog className="">
             <form>
               <DialogTrigger asChild>
-                <button className="bg-white w-11 h-11 rounded-full flex items-center justify-center ">
-                  <RedPlusIcon />
+                <button
+                  className={`w-11 h-11 rounded-full flex items-center justify-center 
+                   ${added ? "bg-black" : "bg-white"}`}
+                >
+                  {added ? <ZuvIcon /> : <RedPlusIcon />}
                 </button>
               </DialogTrigger>
-              <DialogContent className="max-w-fit!">
+              <DialogContent className="max-w-fit! rounded-2xl">
                 <DialogTitle></DialogTitle>
                 <div className="w-[826px] h-[412px] bg-white rounded-3xl flex  items-center justify-between ">
                   <div className="relative flex justify-end  items-end w-[387px] h-[364px] rounded-full ">
@@ -112,7 +121,7 @@ export const CardInfo = (props) => {
                         <div>
                           <button
                             className="w-[377px] h-12 bg-black rounded-full text-white flex items-center justify-center"
-                            onClick={handleAdd}
+                            onClick={handle}
                           >
                             Add to card
                           </button>
