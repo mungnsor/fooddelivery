@@ -20,6 +20,7 @@ export const Login = (props) => {
   // const { handleBackStep } = props;
   const getStepOneValuesFromLocalStorages = () => {
     const values = localStorage.getItem("stepTwo2");
+    console.log(values);
     if (values) {
       return JSON.parse(values);
     } else {
@@ -29,6 +30,38 @@ export const Login = (props) => {
       };
     }
   };
+  const [catchToken, setCatchToken] = useState({ email: "", password: "" });
+
+  const handleLogin = async () => {
+    console.log(catchToken, "asd");
+
+    try {
+      const res = await fetch("http://localhost:8000/users/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          accept: "application/json",
+        },
+        body: JSON.stringify({
+          email: catchToken.email,
+          password: catchToken.password,
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          const token = data.token;
+          {
+            localStorage.setItem("token", data.token);
+            window.location.href = "/";
+          }
+        });
+
+      setCatchToken;
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const [formValues, setFormValues] = useState({
     getStepOneValuesFromLocalStorages,
   });
@@ -108,7 +141,7 @@ export const Login = (props) => {
             <p>Forgot password ?</p>
             <button
               className=" bg-black text-white  rounded-lg h-11 cursor-pointer text-[16px] font-medium w-[416px]"
-              onClick={handleContinueButton}
+              onClick={handleLogin}
               disabled={disabled()}
             >
               Lets go

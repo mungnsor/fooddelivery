@@ -12,12 +12,10 @@ import {
 } from "@/components/ui/sheet";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogTitle,
   DialogTrigger,
   DialogHeader,
-  DialogDescription,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PackageIcon } from "../icons/package";
@@ -26,7 +24,7 @@ import { SaveFood } from "../components/saveFood";
 import { Textarea } from "@/components/ui/textarea";
 import { PictureIcon } from "../icons/pictureIcon";
 import { EmpthyCard } from "../components/empthy";
-import { EmpthyOrder } from "../components/empthyOrder";
+import { Order } from "../components/order";
 
 export const Header = ({ page }) => {
   const [addLocation, setAddLocation] = useState(false);
@@ -58,6 +56,33 @@ export const Header = ({ page }) => {
   const totalPrice = saveFood.reduce((sum, item) => {
     return sum + item.price * item.page;
   }, 0);
+  const handleCheckout = async () => {
+    const orderData = {
+      user: "guest",
+      totalPrice: totalPrice + 10,
+      foodOrderItems: saveFood,
+      status: "pending",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    try {
+      await fetch("http://localhost:8000/foodOrder", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      console.log("Order saved to backend!");
+    } catch (err) {
+      console.log("Error saving order:", err);
+    }
+
+    localStorage.removeItem("savedFoods");
+    setSaveFood([]);
+  };
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -113,8 +138,10 @@ export const Header = ({ page }) => {
                       <div className="text-[#71717A] h-10 text-2xl w-115 font-semibold ">
                         My card
                       </div>
-                      {saveFood.map((save, index) => {
-                        return (
+                      {saveFood.length === 0 ? (
+                        <EmpthyCard />
+                      ) : (
+                        saveFood.map((save, index) => (
                           <SaveFood
                             key={index}
                             image={save.image}
@@ -123,9 +150,8 @@ export const Header = ({ page }) => {
                             price={save.price}
                             count={save.page}
                           />
-                        );
-                      })}
-                      {/* <EmpthyCard /> */}
+                        ))
+                      )}
                     </div>
                     <div className="w-120 h-40  flex  justify-between  flex-col">
                       <div className="text-[#71717A] h-11 text-xl flex items-end  font-semibold ">
@@ -185,7 +211,10 @@ export const Header = ({ page }) => {
                         <Dialog>
                           <form>
                             <DialogTrigger asChild>
-                              <button className="w-full h-10 bg-[#EF4444] cursor-pointer flex items-center justify-center rounded-2xl">
+                              <button
+                                className="w-full h-10 bg-[#EF4444] cursor-pointer flex items-center justify-center rounded-2xl"
+                                onClick={handleCheckout}
+                              >
                                 <p className="text-white font-medium">
                                   Checkout
                                 </p>
@@ -218,7 +247,7 @@ export const Header = ({ page }) => {
                       <div className="text-[#71717A] h-10 text-2xl w-115 font-semibold ">
                         Order history
                       </div>
-                      <EmpthyOrder />
+                      <Order />
                     </div>
                   </div>
                 </TabsContent>

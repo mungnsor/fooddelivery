@@ -12,7 +12,7 @@ const check = (string) => {
 const addStepOneValuesToLocalStorages = (values) => {
   localStorage.setItem("stepTwo", JSON.stringify(values));
 };
-export const StepTwo2 = (props) => {
+export const StepTwo1 = (props) => {
   const { handleBackStep } = props;
   const [errorState, setErrorState] = useState({});
   const getStepOneValuesFromLocalStorages = () => {
@@ -43,27 +43,27 @@ export const StepTwo2 = (props) => {
   const [formValues, setFormValues] = useState({
     getStepOneValuesFromLocalStorages,
   });
-  // const handleSubmit = async () => {
-  //   try {
-  //     const res = await fetch("http://localhost:8000/users/createUser", {
-  //       method: "POST",
-  //       headers: {
-  //         "content-type": "application/json",
-  //         accept: "application/json",
-  //       },
-  //       body: JSON.stringify({
-  //         email: email,
-  //       }),
-  //     });
+  const handleSubmit = async () => {
+    try {
+      const res = await fetch("http://localhost:8000/users", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          accept: "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+        }),
+      });
 
-  //     const { token } = await res.json();
+      const { token } = await res.json();
 
-  //     localStorage.setItem("token", token);
-  //     router.push("/");
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
+      localStorage.setItem("token", token);
+      router.push("/");
+    } catch (err) {
+      console.log(err);
+    }
+  };
   const handleContinueButton = () => {
     const errors = validateInput();
     if (Object.keys(errors).length === 0) {
@@ -115,13 +115,15 @@ export const StepTwo2 = (props) => {
             errorsMess={"Invalid email. Use a format like example@email.com."}
             place={"Enter your email address"}
           />
-          <button
-            className="h-9 w-full bg-gray-200 text-white flex justify-center items-center hover:bg-black"
-            disabled={disabled()}
-            onClick={handleContinueButton}
-          >
-            Lets go
-          </button>
+          <Link href={"/login"}>
+            <button
+              className="h-9 w-full bg-gray-200 text-white flex justify-center items-center hover:bg-black"
+              disabled={disabled()}
+              onClick={handleSubmit}
+            >
+              Lets go
+            </button>
+          </Link>
           <div
             className="flex justify-between
               "

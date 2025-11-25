@@ -9,7 +9,7 @@ const checkPassword = (string) => {
 const addStepOneValuesToLocalStorages = (values) => {
   localStorage.setItem("stepTwo", JSON.stringify(values));
 };
-export const StepOne1 = (props) => {
+export const StepOne2 = (props) => {
   const { handleBackStep } = props;
   const { handleNextStep } = props;
   const getStepOneValuesFromLocalStorages = () => {

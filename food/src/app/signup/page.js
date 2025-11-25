@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
-import { StepOne1 } from "./features/stepone";
-import { StepTwo2 } from "./features/steptwo";
+import { StepOne2 } from "./features/stepone";
+import { StepTwo1 } from "./features/steptwo";
 export default function Home() {
   const [step, setStep] = useState(1);
   const handleNextStep = () => {
@@ -16,14 +16,14 @@ export default function Home() {
   };
   return (
     <>
-      {step === 2 && (
-        <StepTwo2
+      {step === 1 && (
+        <StepTwo1
           handleNextStep={handleNextStep}
           handleBackStep={handleBackStep}
         />
       )}
-      {step === 1 && (
-        <StepOne1
+      {step === 2 && (
+        <StepOne2
           // handleBackStep={handleBackStep}
           handleNextStep={handleNextStep}
         />
