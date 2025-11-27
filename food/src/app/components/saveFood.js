@@ -16,6 +16,8 @@ export const SaveFood = ({
   price,
   id,
   count,
+  onDelete,
+  index,
 }) => {
   const [foodsType, setFoodsType] = useState([]);
   const [addDishChange, setAddDishChange] = useState(null);
@@ -42,32 +44,8 @@ export const SaveFood = ({
       setPage(page - 1);
     }
   };
-  const handleDishDelete = async () => {
-    try {
-      const res = await fetch("http://localhost:8000/food", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          accept: "application/json",
-        },
-        body: JSON.stringify({
-          id: addDish._id,
-        }),
-      });
-      await getFoodType(),
-        setAddDishChange(false),
-        toast("Dish successfully deleted.", {
-          position: "top-center",
-        });
-    } catch (err) {
-      console.log(err);
-    }
-  };
-  const handleDelete = () => {
-    setAddDishChange(null);
-  };
   return (
-    <div className="w-full   overflow-scroll ">
+    <div className="w-full overflow-scroll ">
       <div className="w-120  border-dashed border-b border-[#09090B80] h-30 flex  mb-5 gap-2 ">
         <div className="w-[30%]  h-23 border rounded-2xl">
           <img className="w-full h-full" src={image} />
@@ -80,7 +58,7 @@ export const SaveFood = ({
             </div>
             <button
               className="h-7 w-7 border rounded-full flex justify-center items-center border-red-500 cursor-pointer text-red-500"
-              onClick={handleDelete}
+              onClick={() => onDelete(index)}
             >
               x
             </button>

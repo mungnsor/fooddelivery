@@ -10,7 +10,7 @@ import {
 import { ZuvIcon } from "../icons/zuvIcon";
 export const CardInfo = (props) => {
   const { image, foodName, ingredients, price } = props;
-  const [page, setPage] = useState(1);
+  const [quantity, setPage] = useState(1);
   const [added, setAdded] = useState(false);
   const [saveFood, setSaveFood] = useState(() => {
     const saved = localStorage.getItem("savedFoods");
@@ -18,20 +18,28 @@ export const CardInfo = (props) => {
   });
 
   const handleNextButton = () => {
-    setPage(page + 1);
+    setPage(quantity + 1);
   };
   const handleBackButton = () => {
-    if (page === 1) {
+    if (quantity === 1) {
       return;
     } else {
-      setPage(page - 1);
+      setPage(quantity - 1);
     }
   };
   const handle = (e) => {
     e.preventDefault();
 
     const saved = JSON.parse(localStorage.getItem("savedFoods")) || [];
-    const newItem = { image, foodName, ingredients, price, page };
+    const { image, foodName, ingredients, price, foodId } = props;
+    const newItem = {
+      image,
+      foodName,
+      ingredients,
+      price,
+      quantity: quantity,
+      food: foodId,
+    };
 
     const updatedList = [...saved, newItem];
     setSaveFood(updatedList);
@@ -99,7 +107,7 @@ export const CardInfo = (props) => {
                           <div>
                             <p>Total price </p>
                             <p className="text-[24px] font-semibold">
-                              ${price * page}
+                              ${price * quantity}
                             </p>
                           </div>
                           <div className="flex gap-3">
@@ -109,7 +117,7 @@ export const CardInfo = (props) => {
                             >
                               -
                             </button>
-                            <button className="w-9 h-9 "> {page}</button>
+                            <button className="w-9 h-9 "> {quantity}</button>
                             <button
                               className=" w-11 h-11 rounded-full flex items-center justify-center border-gray-300 border"
                               onClick={handleNextButton}

@@ -9,27 +9,16 @@ const checkEmailHasSpecial = (string) => {
 const check = (string) => {
   return /[%]/.test(string);
 };
-const addStepOneValuesToLocalStorages = (values) => {
-  localStorage.setItem("stepTwo", JSON.stringify(values));
-};
-export const StepTwo1 = (props) => {
-  const { handleBackStep } = props;
+export const StepTwo1 = () => {
   const [errorState, setErrorState] = useState({});
-  const getStepOneValuesFromLocalStorages = () => {
-    const values = localStorage.getItem("stepTwo2");
-    if (values) {
-      return JSON.parse(values);
-    } else {
-      return {
-        Email: "",
-      };
-    }
-  };
+  const [catchToken, setCatchToken] = useState({ email: "" });
   const handleInputChange = (e) => {
     const inputName = e.target.name;
     const inputValue = e.target.value;
-    setFormValues({ ...formValues, [inputName]: inputValue });
+    setCatchToken({ ...catchToken, [inputName]: inputValue });
   };
+  const stringObject = JSON.stringify(catchToken);
+  const object = JSON.parse(stringObject);
   const validateInput = () => {
     const errors = {};
     if (!formValues.Email) {
@@ -40,52 +29,44 @@ export const StepTwo1 = (props) => {
       errors.Email = "email";
     }
   };
-  const [formValues, setFormValues] = useState({
-    getStepOneValuesFromLocalStorages,
-  });
-  const handleSubmit = async () => {
+  const handleLogin = async () => {
+    console.log(catchToken, "asd");
+
     try {
       const res = await fetch("http://localhost:8000/users", {
         method: "POST",
         headers: {
-          "content-type": "application/json",
+          "Content-Type": "application/json",
           accept: "application/json",
         },
         body: JSON.stringify({
-          email: email,
+          email: catchToken.email,
         }),
       });
 
-      const { token } = await res.json();
+      const data = await res.json();
+      console.log(data, "hehehehh");
 
-      localStorage.setItem("token", token);
-      router.push("/");
+      const token = data.token;
+      {
+        localStorage.setItem("token", data.token);
+        window.location.href = "/";
+      }
+
+      setCatchToken;
     } catch (err) {
       console.log(err);
     }
   };
-  const handleContinueButton = () => {
-    const errors = validateInput();
-    if (Object.keys(errors).length === 0) {
-      setErrorState({});
-      addStepOneValuesToLocalStorages(formValues);
-      handleNextStep();
-    } else {
-      setErrorState(errors);
-    }
-  };
   const disabled = () => {
-    return formValues.Email === 0 || formValues.Password === 0;
+    return catchToken.email === 0;
   };
   return (
     <div className="w-full h-full">
       <div className="w-full flex justify-evenly m-auto  py-5 items-center">
         <div className="w-104 h-72 flex flex-col justify-between">
           <div>
-            <button
-              className="w-9 h-9 border flex justify-center items-center"
-              onClick={handleBackStep}
-            >
+            <button className="w-9 h-9 border flex justify-center items-center">
               <LeftIcon />
             </button>
           </div>
@@ -95,23 +76,11 @@ export const StepTwo1 = (props) => {
               Sign up to explore your favorite dishes.
             </p>
           </div>
-          {/* <div className="h-9 w-full flex flex-col justify-between">
-            <input
-              id="email"
-              type="email"
-              placeholder="Enter your email address"
-              className="w-full border h-9 rounded-md px-2"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-              }}
-            />
-          </div> */}
           <FormInput
             handleChange={handleInputChange}
-            name={"Email"}
-            value={formValues.Email}
-            errors={errorState.Email}
+            name={"email"}
+            value={catchToken.email}
+            errors={errorState.email}
             errorsMess={"Invalid email. Use a format like example@email.com."}
             place={"Enter your email address"}
           />
@@ -119,7 +88,7 @@ export const StepTwo1 = (props) => {
             <button
               className="h-9 w-full bg-gray-200 text-white flex justify-center items-center hover:bg-black"
               disabled={disabled()}
-              onClick={handleSubmit}
+              onClick={handleLogin}
             >
               Lets go
             </button>

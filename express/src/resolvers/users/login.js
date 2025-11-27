@@ -31,6 +31,7 @@ export const login = async (req, res) => {
     return res.send({
       message: `User ${email} logged in successfully`,
       token,
+      userId: user._id,
     });
   } catch (error) {
     console.error("Login error:", error);

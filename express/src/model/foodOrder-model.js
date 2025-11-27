@@ -18,6 +18,7 @@ const FoodOrderSchema = new Schema({
     type: String,
     enum: ["PENDING", "CANCELED", "DELIVERED"],
   },
+  address: { type: String },
   createdAt: { type: Date, required: true, default: Date.now },
   updatedAt: { type: Date, required: true, default: Date.now },
 });

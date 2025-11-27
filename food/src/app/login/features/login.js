@@ -12,24 +12,7 @@ const checkEmailHasSpecial = (string) => {
 const check = (string) => {
   return /[%]/.test(string);
 };
-const addStepOneValuesToLocalStorages = (values) => {
-  localStorage.setItem("stepTwo", JSON.stringify(values));
-};
 export const Login = (props) => {
-  // const { handleNextStep } = props;
-  // const { handleBackStep } = props;
-  const getStepOneValuesFromLocalStorages = () => {
-    const values = localStorage.getItem("stepTwo2");
-    console.log(values);
-    if (values) {
-      return JSON.parse(values);
-    } else {
-      return {
-        Password: "",
-        Email: "",
-      };
-    }
-  };
   const [catchToken, setCatchToken] = useState({ email: "", password: "" });
 
   const handleLogin = async () => {
@@ -46,62 +29,49 @@ export const Login = (props) => {
           email: catchToken.email,
           password: catchToken.password,
         }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          const token = data.token;
-          {
-            localStorage.setItem("token", data.token);
-            window.location.href = "/";
-          }
-        });
+      });
+
+      const data = await res.json();
+      console.log(data, "hehehe");
+
+      const token = data.token;
+      {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userId", data.userId);
+        window.location.href = "/";
+      }
 
       setCatchToken;
     } catch (err) {
       console.log(err);
     }
   };
-
-  const [formValues, setFormValues] = useState({
-    getStepOneValuesFromLocalStorages,
-  });
   const [errorState, setErrorState] = useState({});
-  const stringObject = JSON.stringify(formValues);
+  const stringObject = JSON.stringify(catchToken);
   const object = JSON.parse(stringObject);
   const handleInputChange = (e) => {
     const inputName = e.target.name;
     const inputValue = e.target.value;
-    setFormValues({ ...formValues, [inputName]: inputValue });
+    setCatchToken({ ...catchToken, [inputName]: inputValue });
   };
-
   const validateInput = () => {
     const errors = {};
-    if (!formValues.Email) {
-      errors.Email = "email";
-    } else if (checkEmailHasSpecial(formValues.Email)) {
-      errors.Email = "email";
+    if (!catchToken.email) {
+      errors.email = "email";
+    } else if (checkEmailHasSpecial(catchToken.email)) {
+      errors.email = "email";
     } else if (check(formValues.Email)) {
-      errors.Email = "email";
+      errors.email = "email";
     }
-    if (!formValues.Password) {
-      errors.Password = "password";
-    } else if (checkPassword(formValues.Password)) {
-      errors.Password = "password";
+    if (!catchToken.password) {
+      errors.password = "password";
+    } else if (checkPassword(catchToken.password)) {
+      errors.password = "password";
     }
     return errors;
   };
-  const handleContinueButton = () => {
-    const errors = validateInput();
-    if (Object.keys(errors).length === 0) {
-      setErrorState({});
-      addStepOneValuesToLocalStorages(formValues);
-      // handleNextStep();
-    } else {
-      setErrorState(errors);
-    }
-  };
   const disabled = () => {
-    return formValues.Email === 0 || formValues.Password === 0;
+    return catchToken.email === 0 || catchToken.password === 0;
   };
   return (
     <div className="w-full h-full ">
@@ -122,18 +92,18 @@ export const Login = (props) => {
           </div>
           <FormInput
             handleChange={handleInputChange}
-            name={"Email"}
-            value={formValues.Email}
-            errors={errorState.Email}
+            name={"email"}
+            value={catchToken.email}
+            errors={errorState.email}
             errorsMess={"Invalid email. Use a format like example@email.com."}
             place={"Enter your email address"}
           />
 
           <FormInput
             handleChange={handleInputChange}
-            name={"Password"}
-            value={formValues.Password}
-            errors={errorState.Password}
+            name={"password"}
+            value={catchToken.password}
+            errors={errorState.password}
             errorsMess={"Incorrect password. Please try again."}
             place={"Password"}
           />

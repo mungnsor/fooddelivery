@@ -45,6 +45,7 @@ export const Card = ({ categoryName, categoryId, totalfood }) => {
                     price={inform.price}
                     foodName={inform.foodName}
                     ingredients={inform.ingredients}
+                    foodId={inform._id}
                   />
                 );
               })}

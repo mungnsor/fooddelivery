@@ -19,53 +19,52 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PackageIcon } from "../icons/package";
-import Link from "next/link";
 import { SaveFood } from "../components/saveFood";
 import { Textarea } from "@/components/ui/textarea";
 import { PictureIcon } from "../icons/pictureIcon";
 import { EmpthyCard } from "../components/empthy";
 import { Order } from "../components/order";
-
-export const Header = ({ page }) => {
+export const Header = ({ quantity }) => {
   const [addLocation, setAddLocation] = useState(false);
   const [addLocationS, setAddLocationS] = useState("");
   const [inform, setInform] = useState(false);
-  const [information, setInformation] = useState("");
   const [address, setAddress] = useState("");
   const [saveFood, setSaveFood] = useState([]);
   console.log(saveFood, "tt");
 
-  const handleAddCategoryChange = async () => {
-    try {
-      const res = await fetch("http://localhost:8000/foodCategory", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          accept: "application/json",
-        },
-        body: JSON.stringify({ categoryName: addLocationS }),
-      });
-      setAddLocation(false), setAddLocationS("");
-      toast("Food is being added to the cart !", {
-        position: "top-center",
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  // const handleAddCategoryChange = async () => {
+  //   try {
+  //     const res = await fetch("http://localhost:8000/foodCategory", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         accept: "application/json",
+  //       },
+  //       body: JSON.stringify({ categoryName: addLocationS }),
+  //     });
+  //     setAddLocation(false), setAddLocationS("");
+  //     toast("Food is being added to the cart !", {
+  //       position: "top-center",
+  //     });
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
   const totalPrice = saveFood.reduce((sum, item) => {
-    return sum + item.price * item.page;
+    return sum + item.price * item.quantity;
   }, 0);
   const handleCheckout = async () => {
+    if (address.trim() === "") {
+      toast("Please enter your delivery address!", { position: "top-center" });
+      return;
+    }
     const orderData = {
-      user: "guest",
+      user: localStorage.getItem("userId"),
       totalPrice: totalPrice + 10,
       foodOrderItems: saveFood,
-      status: "pending",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      address: address,
+      status: "PENDING",
     };
-
     try {
       await fetch("http://localhost:8000/foodOrder", {
         method: "POST",
@@ -76,20 +75,41 @@ export const Header = ({ page }) => {
       });
 
       console.log("Order saved to backend!");
+      localStorage.removeItem("savedFoods");
+      setSaveFood([]);
     } catch (err) {
       console.log("Error saving order:", err);
     }
-
-    localStorage.removeItem("savedFoods");
-    setSaveFood([]);
   };
+  const handleDelete = (index) => {
+    const newData = saveFood.filter((_, i) => i !== index);
+    setSaveFood(newData);
+    localStorage.setItem("savedFoods", JSON.stringify(newData));
+  };
+  const handleSaveAddress = () => {
+    if (addLocationS.trim() === "") return;
+
+    setAddress(addLocationS);
+    localStorage.setItem("deliveryAddress", addLocationS);
+    setAddLocation(false);
+    setAddLocationS("");
+  };
+  useEffect(() => {
+    const saved = localStorage.getItem("savedFoods");
+    if (saved) setSaveFood(JSON.parse(saved));
+
+    const savedAddress = localStorage.getItem("deliveryAddress");
+    if (savedAddress) setAddress(savedAddress);
+  }, []);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("savedFoods");
-      if (saved) setSaveFood(JSON.parse(saved));
-    }
-  }, []);
+    localStorage.setItem("savedFoods", JSON.stringify(saveFood));
+  }, [saveFood]);
+
+  useEffect(() => {
+    localStorage.setItem("deliveryAddress", address);
+  }, [address]);
+
   return (
     <div className="flex h-43 w-full bg-black justify-between p-8 items-center">
       <div className="  flex items-center gap-2 text-[15px] mt-10 ">
@@ -144,11 +164,14 @@ export const Header = ({ page }) => {
                         saveFood.map((save, index) => (
                           <SaveFood
                             key={index}
+                            index={index}
                             image={save.image}
                             foodName={save.foodName}
                             ingredients={save.ingredients}
                             price={save.price}
-                            count={save.page}
+                            count={save.quantity}
+                            id={save.id}
+                            onDelete={handleDelete}
                           />
                         ))
                       )}
@@ -295,7 +318,7 @@ export const Header = ({ page }) => {
               </button>
               <button
                 className="w-31 h-10 bg-black text-white rounded-lg "
-                onClick={handleAddCategoryChange}
+                onClick={handleSaveAddress}
               >
                 Deliver here
               </button>
@@ -303,7 +326,7 @@ export const Header = ({ page }) => {
           </div>
         </div>
       )}
-      {inform && (
+      {/* {inform && (
         <div className="flex fixed inset-0 z-1 bg-black/25 w-full h-full justify-end items-start mt-17 ">
           <div className="w-[188px] h-[104px] bg-white rounded-2xl ml-10 items-center flex flex-col">
             <div className="w-[178px] h-[100px] flex  mt-4">
@@ -326,7 +349,7 @@ export const Header = ({ page }) => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };
