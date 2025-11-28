@@ -8,6 +8,7 @@ export const deleteFoodOrder = async (req, res) => {
       status: req.body.status,
       createdAt: req.body.createdAt,
       updatedAt: req.body.updatedAt,
+      address: req.body.address,
     });
     res.status(200).json(dbFoodOrder);
   } catch (error) {

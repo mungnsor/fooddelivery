@@ -31,25 +31,6 @@ export const Header = ({ quantity }) => {
   const [address, setAddress] = useState("");
   const [saveFood, setSaveFood] = useState([]);
   console.log(saveFood, "tt");
-
-  // const handleAddCategoryChange = async () => {
-  //   try {
-  //     const res = await fetch("http://localhost:8000/foodCategory", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         accept: "application/json",
-  //       },
-  //       body: JSON.stringify({ categoryName: addLocationS }),
-  //     });
-  //     setAddLocation(false), setAddLocationS("");
-  //     toast("Food is being added to the cart !", {
-  //       position: "top-center",
-  //     });
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
   const totalPrice = saveFood.reduce((sum, item) => {
     return sum + item.price * item.quantity;
   }, 0);
@@ -86,13 +67,27 @@ export const Header = ({ quantity }) => {
     setSaveFood(newData);
     localStorage.setItem("savedFoods", JSON.stringify(newData));
   };
-  const handleSaveAddress = () => {
+  const handleSaveAddress = async () => {
     if (addLocationS.trim() === "") return;
-
-    setAddress(addLocationS);
-    localStorage.setItem("deliveryAddress", addLocationS);
-    setAddLocation(false);
-    setAddLocationS("");
+    try {
+      const res = await fetch("http://localhost:8000/users", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          accept: "application/json",
+        },
+        body: JSON.stringify({
+          id: localStorage.getItem("userId"),
+          address: addLocationS,
+        }),
+      });
+      await setAddress(addLocationS);
+      localStorage.setItem("deliveryAddress", addLocationS);
+      setAddLocation(false);
+      setAddLocationS("");
+    } catch (err) {
+      console.log(err);
+    }
   };
   useEffect(() => {
     const saved = localStorage.getItem("savedFoods");
@@ -101,15 +96,12 @@ export const Header = ({ quantity }) => {
     const savedAddress = localStorage.getItem("deliveryAddress");
     if (savedAddress) setAddress(savedAddress);
   }, []);
-
   useEffect(() => {
     localStorage.setItem("savedFoods", JSON.stringify(saveFood));
   }, [saveFood]);
-
   useEffect(() => {
     localStorage.setItem("deliveryAddress", address);
   }, [address]);
-
   return (
     <div className="flex h-43 w-full bg-black justify-between p-8 items-center">
       <div className="  flex items-center gap-2 text-[15px] mt-10 ">
@@ -278,7 +270,6 @@ export const Header = ({ quantity }) => {
             </div>
           </SheetContent>
         </Sheet>
-
         <button
           className="w-9 h-9 rounded-full bg-[#ef4444] flex items-center justify-center "
           onClick={() => {
@@ -326,7 +317,7 @@ export const Header = ({ quantity }) => {
           </div>
         </div>
       )}
-      {/* {inform && (
+      {inform && (
         <div className="flex fixed inset-0 z-1 bg-black/25 w-full h-full justify-end items-start mt-17 ">
           <div className="w-[188px] h-[104px] bg-white rounded-2xl ml-10 items-center flex flex-col">
             <div className="w-[178px] h-[100px] flex  mt-4">
@@ -341,15 +332,13 @@ export const Header = ({ quantity }) => {
               </button>
             </div>
             <div className="w-full flex justify-center  gap-2 ">
-              <Link href={"/login"}>
-                <button className="w-31 h-10 text-black rounded-full bg-gray-200 ">
-                  Signed out
-                </button>
-              </Link>
+              <button className="w-31 h-10 text-black rounded-full bg-gray-200 ">
+                Signed out
+              </button>
             </div>
           </div>
         </div>
-      )} */}
+      )}
     </div>
   );
 };

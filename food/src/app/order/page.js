@@ -2,14 +2,70 @@
 import { OrderIcon } from "../icons/orderIcon";
 import { MenuIcon } from "../icons/menuIcon";
 import { LogoIcon } from "../icons/logoIcon";
-
 import { DownIcon } from "../icons/downIcon";
-import { DownUpIcon } from "../icons/downupIcon";
 import { LeftIcon } from "../icons/leftIcon";
 import { RigthIcon } from "../icons/rigthIcon";
-import { usePathname } from "next/navigation";
-export default function Home() {
-  const path = usePathname();
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useEffect, useState } from "react";
+export default function Home({ userId }) {
+  const [orders, setOrders] = useState([]);
+  const [page, setPage] = useState(1);
+  const handleNextButton = () => {
+    setPage(page + 1);
+  };
+  const handleBackButton = () => {
+    if (page === 1) {
+      return;
+    } else {
+      setPage(page - 1);
+    }
+  };
+  const handleUpdateStatus = async (id, status) => {
+    try {
+      const res = await fetch("http://localhost:8000/foodOrder", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          accept: "application/json",
+        },
+        body: JSON.stringify({
+          status,
+          id,
+        }),
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const id = userId || localStorage.getItem("userId");
+        if (!id) return;
+        const res = await fetch(`http://localhost:8000/foodOrder`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await res.json();
+        console.log("orderData", data);
+
+        setOrders(data);
+      } catch (err) {
+        console.log("Error fetching orders:", err);
+      }
+    };
+
+    fetchOrders();
+  }, [userId]);
   return (
     <div className="w-full flex  m-auto">
       <div className="w-[250px] ml-15">
@@ -44,7 +100,7 @@ export default function Home() {
             <div className="flex justify-between items-center w-full h-[76px]">
               <div className="w-[485px] h-11 ml-3">
                 <div className="text-[20px] font-semibold">Orders</div>
-                <div>32 items</div>
+                <div>{orders.length} items</div>
               </div>
               <div className="w-[525px] h-11 mr-4 flex items-center justify-between">
                 <button className="flex items-center justify-center w-[300px] h-9 text-[15px] border border-gray-200 rounded-2xl">
@@ -69,7 +125,7 @@ export default function Home() {
                   №
                 </div>
                 <div className="w-[213px] h-full flex justify-center items-center">
-                  Customizer
+                  Customer
                 </div>
                 <div className="w-40 h-full flex justify-center items-center">
                   Food
@@ -87,49 +143,74 @@ export default function Home() {
                   Delivery state
                 </div>
               </div>
-              <div className="w-[1171px] h-15 flex border border-gray-200">
-                <div className="w-12 h-full flex items-center justify-center">
-                  <input type="checkbox"></input>
-                </div>
-                <div className="w-14 h-full flex justify-center items-center">
-                  1
-                </div>
-                <div className="w-[213px] h-full flex justify-center items-center">
-                  sor
-                </div>
-                <div className="w-40  h-full flex items-center justify-end">
-                  <div className="flex justify-between items-center gap-2 w-25 h-8">
-                    2 food <DownIcon />
+              {orders.map((order, index) => (
+                <div
+                  key={index}
+                  className="w-[1171px] h-15 flex border border-gray-200 gap-3"
+                >
+                  <div className="w-12 h-full flex items-center justify-center">
+                    <input type="checkbox"></input>
+                  </div>
+                  <div className="w-14 h-full flex justify-center items-center">
+                    {index + 1}
+                  </div>
+                  <div className="w-[213px] h-full flex justify-center items-center">
+                    {order.user.email}
+                  </div>
+                  <div className="w-20  h-full flex items-center ">
+                    <div className="flex justify-between items-center gap-2 w-25 h-8">
+                      {order.foodOrderItems.length} food <DownIcon />
+                    </div>
+                  </div>
+                  <div className="w-40 h-full flex justify-center items-center">
+                    {order.createdAt?.slice(0, 10)}
+                  </div>
+                  <div className="w-40 h-full flex justify-center items-center">
+                    ${order.totalPrice}
+                  </div>
+                  <div className="w-[213px] h-full flex justify-center items-center">
+                    {order.user.address}
+                  </div>
+                  <div className="w-28 h-full flex items-center justify-center">
+                    <Select
+                      value={order.status}
+                      onValueChange={(value) =>
+                        handleUpdateStatus(order._id, value)
+                      }
+                      className="w-[68px]"
+                    >
+                      <SelectTrigger>
+                        <SelectValue className="border border-red-400 rounded-2xl px-2 flex gap-2 h-8 items-center cursor-pointer">
+                          <SelectValue />
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectItem value="PENDING">Pending</SelectItem>
+                          <SelectItem value="DELIVERED">Delivered</SelectItem>
+                          <SelectItem value="CANCELED">Canceled</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
-                <div className="w-40 h-full flex justify-center items-center">
-                  Date
-                </div>
-                <div className="w-40 h-full flex justify-center items-center">
-                  26.87$
-                </div>
-                <div className="w-[213px] h-full flex justify-center items-center">
-                  SVJ
-                </div>
-                <div className="w-55 h-full flex items-center justify-center">
-                  <button className="border border-red-400 rounded-2xl px-2 flex gap-2 h-8 items-center">
-                    Pending <DownUpIcon />
-                  </button>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
           <div className="h-[70px] flex gap-2 max-w-[1171px] w-full justify-end mt-4">
-            <button className="w-8 h-8 flex bg-white justify-center items-center rounded-2xl ">
+            <button
+              className="w-8 h-8 flex bg-white justify-center items-center rounded-2xl "
+              onClick={handleBackButton}
+            >
               <LeftIcon />
             </button>
             <button className="w-8 h-8 flex bg-white justify-center items-center rounded-2xl ">
-              1
+              {page}
             </button>
-            <button className="w-8 h-8 flex bg-white justify-center items-center rounded-2xl ">
-              2
-            </button>
-            <button className="w-8 h-8 flex bg-white justify-center items-center rounded-2xl ">
+            <button
+              className="w-8 h-8 flex bg-white justify-center items-center rounded-2xl "
+              onClick={handleNextButton}
+            >
               <RigthIcon />
             </button>
           </div>

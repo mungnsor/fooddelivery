@@ -13,6 +13,7 @@ export const createUser = async (req, res) => {
       password: hashPassword,
       createdAt: newUser.createdAt,
       updatedAt: newUser.updatedAt,
+      address: newUser.address,
     });
     res.send("New user added");
   } catch (error) {

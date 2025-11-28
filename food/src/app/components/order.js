@@ -3,7 +3,6 @@ import { LogoIcon } from "../icons/logoIcon";
 import { DateIcon } from "../icons/dateIcon";
 import { LocationIcon } from "../icons/locationIcon";
 import { CupIcon } from "../icons/cupIcon";
-
 export const Order = ({ userId }) => {
   const [orders, setOrders] = useState([]);
   useEffect(() => {
@@ -18,6 +17,8 @@ export const Order = ({ userId }) => {
           },
         });
         const data = await res.json();
+        console.log("orderData", data);
+
         setOrders(data);
       } catch (err) {
         console.log("Error fetching orders:", err);
@@ -26,7 +27,6 @@ export const Order = ({ userId }) => {
 
     fetchOrders();
   }, [userId]);
-
   return (
     <div>
       {orders.length === 0 && (
@@ -48,18 +48,18 @@ export const Order = ({ userId }) => {
                 <p className="font-semibold"> ${order.totalPrice}</p>
                 <p className="font-semibold"> (#{index + 1})</p>
               </div>
-              <button className="border border-red-400 rounded-2xl px-2 flex gap-2 h-8 items-center cursor-pointer">
-                Pending
-              </button>
+              <div className="border border-red-400 rounded-2xl px-2 flex gap-2 h-8 items-center cursor-pointer text-[12px] font-semibold">
+                {order.status}
+              </div>
             </div>
             <div className="mt-2">
               {order.foodOrderItems?.map((item, index) => (
                 <div key={index} className="flex justify-between">
-                  <div className="flex items-center">
+                  <div className="flex items-center gap-2.5">
                     <p>
                       <CupIcon />
                     </p>
-                    <p>{item.foodName}</p>
+                    <p>{item.food.foodName}</p>
                   </div>
                   <div>
                     <p>x{item.quantity}</p>
@@ -77,7 +77,7 @@ export const Order = ({ userId }) => {
               <p>
                 <LocationIcon />
               </p>
-              <p> {order.address || "unknown"}</p>
+              <p> {order.user.address || "unknown"}</p>
             </div>
           </div>
         </div>

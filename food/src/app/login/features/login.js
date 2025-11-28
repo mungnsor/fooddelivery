@@ -12,7 +12,7 @@ const checkEmailHasSpecial = (string) => {
 const check = (string) => {
   return /[%]/.test(string);
 };
-export const Login = (props) => {
+export const Login = () => {
   const [catchToken, setCatchToken] = useState({ email: "", password: "" });
 
   const handleLogin = async () => {

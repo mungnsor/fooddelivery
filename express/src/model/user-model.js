@@ -12,6 +12,7 @@ const UserSchema = new Schema({
     enum: ["USER", "ADMIN"],
     default: "USER",
   },
+  address: { type: String },
   createdAt: { type: Date, required: true, default: Date.now },
   updatedAt: { type: Date, required: true, default: Date.now },
 });

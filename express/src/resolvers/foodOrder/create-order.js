@@ -10,6 +10,7 @@ export const createFoodOrder = async (req, res) => {
       totalPrice: req.body.totalPrice,
       foodOrderItems: req.body.foodOrderItems,
       status: req.body.status,
+      address: req.body.address,
     });
     res.send("New user added");
   } catch (error) {
