@@ -20,11 +20,11 @@ export const SaveFood = ({
   index,
 }) => {
   const [foodsType, setFoodsType] = useState([]);
-  const [addDishChange, setAddDishChange] = useState(null);
+  const backend_url = process.env.PUBLIC_BACKEND_URL;
   const [page, setPage] = useState(count);
   const getFoodType = async () => {
     const data = await fetch(
-      `http://localhost:8000/food/findByCategory/${id}`,
+      `${backend_url}/food/findByCategory/${id}`,
       options
     );
     const jsonData = await data.json();
@@ -45,7 +45,7 @@ export const SaveFood = ({
     }
   };
   return (
-    <div className="w-full overflow-scroll ">
+    <div className="w-full overflow-scroll  ">
       <div className="w-120  border-dashed border-b border-[#09090B80] h-30 flex  mb-5 gap-2 ">
         <div className="w-[30%]  h-23 border rounded-2xl">
           <img className="w-full h-full" src={image} />

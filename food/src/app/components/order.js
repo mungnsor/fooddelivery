@@ -5,12 +5,13 @@ import { LocationIcon } from "../icons/locationIcon";
 import { CupIcon } from "../icons/cupIcon";
 export const Order = ({ userId }) => {
   const [orders, setOrders] = useState([]);
+  const backend_url = process.env.PUBLIC_BACKEND_URL;
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         const id = userId || localStorage.getItem("userId");
         if (!id) return;
-        const res = await fetch(`http://localhost:8000/foodOrder/${id}`, {
+        const res = await fetch(`${backend_url}/foodOrder/${id}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -48,7 +49,17 @@ export const Order = ({ userId }) => {
                 <p className="font-semibold"> ${order.totalPrice}</p>
                 <p className="font-semibold"> (#{index + 1})</p>
               </div>
-              <div className="border border-red-400 rounded-2xl px-2 flex gap-2 h-8 items-center cursor-pointer text-[12px] font-semibold">
+              <div
+                className={`border rounded-2xl px-2 flex gap-2 h-8 items-center cursor-pointer text-[12px] font-semibold  ${
+                  order.status === "PENDING"
+                    ? "border-red-500 "
+                    : order.status === "DELIVERED"
+                    ? "border-green-500 "
+                    : order.status === "CANCELED"
+                    ? "border-gray-300 "
+                    : "border-gray-300"
+                }`}
+              >
                 {order.status}
               </div>
             </div>

@@ -10,6 +10,7 @@ const check = (string) => {
   return /[%]/.test(string);
 };
 export const StepTwo1 = () => {
+  const backend_url = process.env.PUBLIC_BACKEND_URL;
   const [errorState, setErrorState] = useState({});
   const [catchToken, setCatchToken] = useState({ email: "" });
   const handleInputChange = (e) => {
@@ -33,7 +34,7 @@ export const StepTwo1 = () => {
     console.log(catchToken, "asd");
 
     try {
-      const res = await fetch("http://localhost:8000/users", {
+      const res = await fetch(`${backend_url}/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

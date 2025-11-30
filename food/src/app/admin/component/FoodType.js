@@ -24,6 +24,8 @@ import { DownMenu } from "./downMenu";
 const UPLOAD_PRESET = "foodProject";
 const CLOUD_NAME = "dchs8gfod";
 
+const backend_url = process.env.PUBLIC_BACKEND_URL;
+
 export const FoodType = ({ FoodCategoryName, id, totalfood }) => {
   const [foodsType, setFoodsType] = useState([]);
   const [addFoodsType, setAddFoodsType] = useState(false);
@@ -100,7 +102,7 @@ export const FoodType = ({ FoodCategoryName, id, totalfood }) => {
 
   const handleAddDish = async () => {
     try {
-      const res = await fetch("http://localhost:8000/food", {
+      const res = await fetch(`${backend_url}/food`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -132,7 +134,7 @@ export const FoodType = ({ FoodCategoryName, id, totalfood }) => {
 
   const handleDishChange = async () => {
     try {
-      const res = await fetch("http://localhost:8000/food", {
+      const res = await fetch(`${backend_url}/food`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -166,7 +168,7 @@ export const FoodType = ({ FoodCategoryName, id, totalfood }) => {
 
   const handleDishDelete = async () => {
     try {
-      const res = await fetch("http://localhost:8000/food", {
+      const res = await fetch(`${backend_url}/food`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -189,7 +191,7 @@ export const FoodType = ({ FoodCategoryName, id, totalfood }) => {
 
   const getFoodType = async () => {
     const data = await fetch(
-      `http://localhost:8000/food/findByCategory/${id}`,
+      `${backend_url}/food/findByCategory/${id}`,
       options
     );
     const jsonData = await data.json();
@@ -200,7 +202,7 @@ export const FoodType = ({ FoodCategoryName, id, totalfood }) => {
     getFoodType();
   }, []);
   const getData = async () => {
-    const data = await fetch(`http://localhost:8000/foodCategory`, options);
+    const data = await fetch(`${backend_url}/foodCategory`, options);
     const jsonData = await data.json();
     setFoodMenu(jsonData);
     console.log(jsonData, "category");

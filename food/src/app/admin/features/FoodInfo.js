@@ -17,7 +17,7 @@ const options = {
       "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4NzZiMzEwNzJlZDg5ODcwMzQxM2Y0NzkyYzZjZTdjYyIsIm5iZiI6MTczODAyNjY5NS44NCwic3ViIjoiNjc5ODJlYzc3MDJmNDkyZjQ3OGY2OGUwIiwic2NvcGVzIjpbImFwaV9yZWFkIl0sInZlcnNpb24iOjF9.k4OF9yGrhA2gZ4VKCH7KLnNBB2LIf1Quo9c3lGF6toE",
   },
 };
-
+const backend_url = process.env.PUBLIC_BACKEND_URL;
 export const FoodMenus = () => {
   const path = usePathname();
   console.log(path);
@@ -27,7 +27,7 @@ export const FoodMenus = () => {
   const [foods, setFoods] = useState([]);
   const handleAddCategoryChange = async () => {
     try {
-      const res = await fetch("http://localhost:8000/foodCategory", {
+      const res = await fetch(`${backend_url}/foodCategory`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -47,13 +47,13 @@ export const FoodMenus = () => {
     }
   };
   const getData = async () => {
-    const data = await fetch(`http://localhost:8000/foodCategory`, options);
+    const data = await fetch(`${backend_url}/foodCategory`, options);
     const jsonData = await data.json();
     setFoodMenu(jsonData);
     console.log(jsonData, "category");
   };
   const getFood = async () => {
-    const data = await fetch(`http://localhost:8000/food`, options);
+    const data = await fetch(`${backend_url}/food`, options);
     const jsonData = await data.json();
     setFoods(jsonData);
     console.log(jsonData, "food");

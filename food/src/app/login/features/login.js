@@ -14,12 +14,12 @@ const check = (string) => {
 };
 export const Login = () => {
   const [catchToken, setCatchToken] = useState({ email: "", password: "" });
-
+  const backend_url = process.env.PUBLIC_BACKEND_URL;
   const handleLogin = async () => {
     console.log(catchToken, "asd");
 
     try {
-      const res = await fetch("http://localhost:8000/users/login", {
+      const res = await fetch(`${backend_url}/users/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
