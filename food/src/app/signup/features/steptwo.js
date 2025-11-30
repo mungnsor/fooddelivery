@@ -31,7 +31,7 @@ export const StepTwo1 = () => {
     }
   };
   const handleLogin = async () => {
-    console.log(catchToken, "asd");
+    console.log(catchToken, "login");
 
     try {
       const res = await fetch(`${backend_url}/users`, {
@@ -44,7 +44,6 @@ export const StepTwo1 = () => {
           email: catchToken.email,
         }),
       });
-
       const data = await res.json();
       console.log(data, "hehehehh");
 
@@ -85,15 +84,15 @@ export const StepTwo1 = () => {
             errorsMess={"Invalid email. Use a format like example@email.com."}
             place={"Enter your email address"}
           />
-          <Link href={"/login"}>
-            <button
-              className="h-9 w-full bg-gray-200 text-white flex justify-center items-center hover:bg-black"
-              disabled={disabled()}
-              onClick={handleLogin}
-            >
-              Lets go
-            </button>
-          </Link>
+
+          <button
+            className="h-9 w-full bg-gray-200 text-white flex justify-center items-center hover:bg-black"
+            disabled={disabled()}
+            onClick={handleLogin}
+          >
+            Lets go
+          </button>
+
           <div
             className="flex justify-between
               "
