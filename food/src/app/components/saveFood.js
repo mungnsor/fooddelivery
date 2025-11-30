@@ -18,10 +18,11 @@ export const SaveFood = ({
   count,
   onDelete,
   index,
+  onQuantityChange,
 }) => {
   const [foodsType, setFoodsType] = useState([]);
   const backend_url = process.env.PUBLIC_BACKEND_URL;
-  const [page, setPage] = useState(count);
+  const [quantity, setQuantity] = useState(count);
   const getFoodType = async () => {
     const data = await fetch(
       `${backend_url}/food/findByCategory/${id}`,
@@ -34,15 +35,16 @@ export const SaveFood = ({
   useEffect(() => {
     getFoodType();
   }, []);
-  const handleNextButton = () => {
-    setPage(page + 1);
+  const handleIncrement = () => {
+    const newQty = quantity + 1;
+    setQuantity(newQty);
+    onQuantityChange(index, newQty);
   };
-  const handleBackButton = () => {
-    if (page === 1) {
-      return;
-    } else {
-      setPage(page - 1);
-    }
+
+  const handleDecrement = () => {
+    const newQty = quantity - 1 < 1 ? 1 : quantity - 1;
+    setQuantity(newQty);
+    onQuantityChange(index, newQty);
   };
   return (
     <div className="w-full overflow-scroll  ">
@@ -67,19 +69,19 @@ export const SaveFood = ({
             <div className="flex gap-1.5">
               <button
                 className="w-11 h-11 rounded-full flex items-center justify-center"
-                onClick={handleBackButton}
+                onClick={handleDecrement}
               >
                 -
               </button>
-              <button className="w-9 h-9 "> {page}</button>
+              <button className="w-9 h-9 "> {quantity}</button>
               <button
                 className=" w-11 h-11 rounded-full flex items-center justify-center"
-                onClick={handleNextButton}
+                onClick={handleIncrement}
               >
                 +
               </button>
             </div>
-            <div className="font-bold text-[16px] ">${price * page}</div>
+            <div className="font-bold text-[16px] ">${price * quantity}</div>
           </div>
         </div>
       </div>

@@ -69,6 +69,13 @@ export const Header = ({ userId }) => {
     setSaveFood(newData);
     localStorage.setItem("savedFoods", JSON.stringify(newData));
   };
+  const handleQuantityChange = (index, delta) => {
+    const newSaveFood = [...saveFood];
+    newSaveFood[index].quantity += delta;
+    if (newSaveFood[index].quantity < 1) newSaveFood[index].quantity = 1;
+    setSaveFood(newSaveFood);
+    localStorage.setItem("savedFoods", JSON.stringify(newSaveFood));
+  };
   const handleSaveAddress = async () => {
     if (addLocationS.trim() === "") return;
     try {
@@ -167,7 +174,7 @@ export const Header = ({ userId }) => {
                   <TabsTrigger value="password">Order</TabsTrigger>
                 </TabsList>
                 <TabsContent value="account" className="w-145 ">
-                  <div className="w-135 mt-5 h-175 flex rounded-2xl text-xl items-center flex-col justify-around bg-white">
+                  <div className="w-135 mt-5 h-175 flex rounded-2xl text-xl items-center flex-col justify-around bg-white overflow-y-auto">
                     <div className=" h-[90%] w-120 flex justify-start flex-col mt-3 ">
                       <div className="text-[#71717A] h-10 text-2xl w-115 font-semibold ">
                         My card
@@ -186,6 +193,15 @@ export const Header = ({ userId }) => {
                             count={save.quantity}
                             id={save.id}
                             onDelete={handleDelete}
+                            onQuantityChange={(index, newQty) => {
+                              const newSaveFood = [...saveFood];
+                              newSaveFood[index].quantity = newQty;
+                              setSaveFood(newSaveFood);
+                              localStorage.setItem(
+                                "savedFoods",
+                                JSON.stringify(newSaveFood)
+                              );
+                            }}
                           />
                         ))
                       )}
