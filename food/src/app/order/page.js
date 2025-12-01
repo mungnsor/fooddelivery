@@ -148,14 +148,14 @@ export default function Home({ userId }) {
                       onChange={(e) => setStartDate(e.target.value)}
                     />
                   </div>
-                  <div className="ml-5">
+                  {/* <div className="ml-5">
                     <input
                       type="date"
                       className="outline-none"
                       value={endDate}
                       onChange={(e) => setEndDate(e.target.value)}
                     />
-                  </div>
+                  </div> */}
                 </div>
                 <button
                   className={`border w-[213px] h-9 text-white rounded-full flex items-center justify-center gap-2 ${

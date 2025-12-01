@@ -1,5 +1,6 @@
 import { userModel } from "../../model/user-model.js";
 import bcrypt from "bcrypt";
+
 export const createUser = async (req, res) => {
   const newUser = req.body;
 
@@ -15,9 +16,11 @@ export const createUser = async (req, res) => {
       updatedAt: newUser.updatedAt,
       address: newUser.address,
     });
-    res.send("New user added");
+    res.status(201).json({ message: "New user added", success: true });
   } catch (error) {
     console.log(error);
-    res.send("error", error);
+    res
+      .status(500)
+      .json({ message: "Error creating user", error: error.message });
   }
 };

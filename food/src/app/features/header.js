@@ -56,7 +56,6 @@ export const Header = ({ userId }) => {
         },
         body: JSON.stringify(orderData),
       });
-
       console.log("Order saved to backend!");
       localStorage.removeItem("savedFoods");
       setSaveFood([]);

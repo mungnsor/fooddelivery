@@ -13,8 +13,9 @@ const options = {
 };
 export const Footer = () => {
   const [foodMenu, setFoodMenu] = useState([]);
+  const backend_url = process.env.PUBLIC_BACKEND_URL;
   const getData = async () => {
-    const data = await fetch(`http://localhost:8000/foodCategory`, options);
+    const data = await fetch(`${backend_url}/foodCategory`, options);
     const jsonData = await data.json();
     setFoodMenu(jsonData);
     console.log(jsonData, "category");
