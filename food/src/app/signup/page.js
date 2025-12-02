@@ -22,14 +22,16 @@ export default function Home() {
       const res = await fetch(`${backend_url}/users`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(catchToken),
+        body: JSON.stringify({
+          email: catchToken.email,
+          password: catchToken.password,
+        }),
       });
-
       const data = await res.json();
 
       if (res.ok) {
         localStorage.setItem("token", data.token || "demo-token");
-        window.location.href = "/";
+        window.location.href = "/login";
       } else {
         alert(data.message);
       }

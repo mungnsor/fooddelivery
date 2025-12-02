@@ -216,7 +216,7 @@ export default function Home({ userId }) {
                       #{index + 1}
                     </div>
                     <div className="w-[213px] h-full flex items-center ml-10 ">
-                      {order.user.email}
+                      {order.user?.email}
                     </div>
                     <div className="flex gap-2">
                       <div className="w-20  h-full flex items-center  ">
@@ -238,7 +238,7 @@ export default function Home({ userId }) {
                       ${order.totalPrice}
                     </div>
                     <div className="w-[213px] h-full flex justify-center items-center">
-                      {order.user.address}
+                      {order.user?.address}
                     </div>
                     <div className="w-40  flex items-center justify-center pr-4">
                       <Select
