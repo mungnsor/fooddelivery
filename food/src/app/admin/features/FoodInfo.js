@@ -9,6 +9,7 @@ import { MenuItem } from "../component/MenuItem";
 import { PlusIcon } from "@/app/icons/plusIcon";
 import { FoodType } from "../component/FoodType";
 import { toast } from "sonner";
+import Link from "next/link";
 const options = {
   method: "GET",
   headers: {
